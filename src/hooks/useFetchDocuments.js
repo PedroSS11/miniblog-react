@@ -17,42 +17,51 @@ export const useFetchDocuments = (docCollection, search = null, uid = null) => {
     const [cancelled, setCancelled] = useState(false);
 
     useEffect(() => {
-        const loadData = async () => {
-            if (cancelled) return;
+        
+        async function loadData() {
+            if(cancelled) return
 
-            setLoading(true);
+            setLoading(true)
 
-            const collectionRef = await collection(db, docCollection);
+            const collectionRef = await collection(db, docCollection)
 
             try {
-                let q = await query(
-                    collectionRef,
-                    orderBy("createAt", "desc")
-                );
+                
+                let q 
+
+
+                //busca
+                //dashoard
+
+
+                q = await query(collectionRef, orderBy('createdAt', 'desc'));
 
                 await onSnapshot(q, (querySnapshot) => {
                     setDocuments(
                         querySnapshot.docs.map((doc) => ({
                             id: doc.id,
                             ...doc.data(),
-                        }))
-                    );
-                });
+                       }))
+                    )
+                })
 
-                setLoading(false);
+                setLoading(false)
+
             } catch (error) {
-                setError(error.message);
-                setLoading(false);
+                console.log(error)
+                setError(error.message)
+
+                setLoading(false)
             }
-        };
+        }
+
         loadData();
+
     }, [docCollection, search, uid, cancelled]);
 
-    console.log(documents);
+    useEffect(()=> {
+        return () => setCancelled(true)
+    }, [])
 
-    useEffect(() => {
-        return () => setCancelled(true);
-    }, []);
-
-    return { documents, loading, error };
+ return {documents, loading, error}
 };
